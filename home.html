@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Portfolio Image Viewer</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+    }
+
+    /* Sidebar Navbar */
+    .sidebar {
+      width: 235px;
+      height: 100vh;
+      background-color: #f8f9fa;
+      padding: 20px;
+      position: fixed;
+      top: 0;
+      left: 0;
+    }
+
+    .sidebar .nav-link {
+      font-size: 20px;
+      margin-bottom: 10px;
+      color: #000;
+    }
+
+    .sidebar .nav-link.active {
+      color: blue;
+    }
+
+    /* Main Content */
+    .content {
+      margin-left: 256px;
+      padding: 20px;
+      width: calc(100% - 270px);
+    }
+
+    /* Main Image */
+    .main-image-container {
+      margin-bottom: 30px;
+      text-align: center;
+    }
+
+    .main-image {
+      width: 100%;
+      height: auto;
+      border-radius: 8px;
+      box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Image Grid Styling */
+    .image-section {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+      gap: 50px;
+    }
+
+    .image-section img {
+      width: 100%;
+      height: 500px;
+      border-radius: 8px;
+      box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+      cursor: pointer;
+    }
+
+    .image-section img:hover {
+      opacity: 0.7;
+      transition: opacity 0.3s ease;
+    }
+    
+    .project-controls a, .project-controls span {
+        color: #575757;    
+        font-weight: normal;
+        font-style: normal;
+        font-size: 15px;
+    }
+    
+    .project-controls a {
+        text-decoration: none;
+    }
+    
+    .prev-project.disabled, .next-project.disabled {
+        pointer-events: none;
+        color: rgba(87,87,87,.5);
+        text-decoration: none;
+        cursor: default;
+    }
+  </style>
+</head>
+<body>
+  <!-- Sidebar Navbar -->
+  <nav class="sidebar">
+    <ul class="nav flex-column">
+      <li class="nav-item">
+        <a class="nav-link active" href="./home.html">Graphic Design</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="./creative-direction.html">Creative Direction</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="./contact.html">Contact</a>
+      </li>
+    </ul>
+  </nav>
+
+  <!-- Content Section -->
+  <div class="content">
+    <!-- Main Image Display -->
+    <div class="row main-image-container mb-5">
+        <div class="col-md-12" id="main-image-name">
+            <!-- Main Image Name will be added here -->
+        </div>
+        <div class="col-md-12" id="main-image">
+            <!-- Main Image will be added here -->
+        </div>
+    </div>
+    
+    <div class="project-controls d-flex justify-content-between d-none" id="project-controls">
+        <a href="#" onclick="hideMainImage()">Back to Graphic Design</a>
+        <div id="projectNav">
+          <a class="prev-project" id="prev-project" href="#">prev</a> / <a class="next-project" id="next-project" href="#">next</a>
+      </div>
+    </div>
+
+    <!-- Thumbnail Image Grid -->
+    <div class="image-section" id="image-section">
+      <!-- Images will be rendered here dynamically -->
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script>
+    const images = [
+        { 
+            id: 1,
+            title: "stephen-sanchez-tour-poster",
+            name: "Stephen Sanchez Tour Poster",
+            src: "./images/stephen-sanchez/1.jpg"
+        },
+        { 
+            id: 2,
+            name: "Remi Wolf Poster",
+            title: "remi-wolf-poster",
+            src: "./images/remi-wolf/1.jpg"
+        },
+        { 
+            id: 3,
+            title: "screen-prints-for-sale-at-the-1975-brisbane-show",
+            name: "Screen Prints for sale at The 1975 Brisbane Show",
+            src: "./images/screen-prints-for-sale/1.jpg"
+        },
+        { 
+            id: 4,
+            title: "tour-poster-for-stephen-sanchez",
+            name: "Tour Poster for Stephen Sanchez",
+            src: "./images/tour-poster-for-stephen-sanchez/1.jpg"
+        },
+        {
+            id: 5,
+            title: "sombr-tour-poster",
+            name: "SOMBR Tour Poster",
+            src: "./images/sombr-tour-poster/1.jpg"
+        },
+        {
+            id: 6,
+            title: "shaboozey-tour-poster",
+            name: "Shaboozey Tour Poster",
+            src: "./images/shaboozey-tour-poster/1.jpg"
+        },
+        {
+            id: 7,
+            title: "this-aint-no-picnic-festival-flyers",
+            name: "This Ain't No Picnic Festival flyers",
+            src: "./images/this-aint-no-picnic-festival-flyers/1.jpg"
+        },
+        {
+            id: 8,
+            title: "cover-for-coup-de-main-dominic-fike-issue",
+            name: "Cover for Coup De Main Dominic Fike Issue",
+            src: "./images/cover-for-coup-de-main-dominic-fike-issue/1.jpg"
+        },
+        {
+            id: 9,
+            title: "stephen-sanchez-poster",
+            name: "Stephen Sanchez Australian Tour Poster",
+            src: "./images/stephen-sanchez-poster/1.jpg"
+        },
+        {
+            id: 10,
+            title: "gatecreeper-flyer",
+            name: "GateCreeper Flyer",
+            src: "./images/gatecreeper-flyer/1.jpg"
+        },
+        {
+            id: 11,
+            title: "ricky-montgomery-screen-print-tour-poster-1",
+            name: "Ricky Montgomery Screen Print Tour Poster",
+            src: "./images/ricky-montgomery-screen-print-tour-poster-1/1.jpg"
+        },
+        {
+            id: 12,
+            title: "sun-room-australian-tour-poster",
+            name: "Sun Room Australian Tour Poster",
+            src: "./images/sun-room-australian-tour-poster/1.jpg"
+        },
+        {
+            id: 13,
+            title: "gracie-abrams-tour-merchandise-designs",
+            name: "Gracie Abrams Tour Merchandise Designs",
+            src: "./images/gracie-abrams-tour-merchandise-designs/1.jpg"
+        },
+        {
+            id: 14,
+            title: "new-gallery-16",
+            name: "Exhibition Poster for Matthew Arbuckle's 'Colour Vision' Show",
+            src: "./images/new-gallery-16/1.jpg"
+        },
+        {
+            id: 15,
+            title: "screen-prints-for-sale-at-the-1975-show",
+            name: "Screen Prints for sale at The 1975 Perth Show",
+            src: "./images/screen-prints-for-sale-at-the-1975-show/1.jpg"
+        },
+        {
+            id: 16,
+            title: "ricky-montgomery-screen-print-tour-poster",
+            name: "Ricky Montgomery Screen Print Tour Poster",
+            src: "./images/ricky-montgomery-screen-print-tour-poster/1.jpg"
+        },
+        {
+            id: 17,
+            title: "designs-for-dior-x-cactus-jack-in-collaboration-with-cactus-jack",
+            name: "Designs for Dior x Cactus Jack, In Collaboration with Cactus Jack and Dior",
+            src: "./images/designs-for-dior-x-cactus-jack-in-collaboration-with-cactus-jack/1.png"
+        },
+        {
+            id: 18,
+            title: "poster-for-indio-downey",
+            name: "Poster for Indio Downey",
+            src: "./images/poster-for-indio-downey/1.jpg"
+        },
+        {
+            id: 19,
+            title: "gracie-abrams-this-is-what-it-feels-like-vinyl-packaging",
+            name: "Gracie Abrams 'This Is What It Feels Like' Vinyl Packaging",
+            src: "./images/gracie-abrams-this-is-what-it-feels-like-vinyl-packaging/1.jpg"
+        },
+        {
+            id: 20,
+            title: "flyer-for-house-of-wonders-record-label-showcase",
+            name: "Flyer for House Of Wonders Record Label Showcase",
+            src: "./images/flyer-for-house-of-wonders-record-label-showcase/1.jpg"
+        },
+        {
+            id: 21,
+            title: "paul-mccartney-hoodie-design-for-got-back-tour",
+            name: "Paul McCartney Hoodie Design for Got Back tour.",
+            src: "./images/paul-mccartney-hoodie-design-for-got-back-tour/1.jpg"
+        },
+        {
+            id: 22,
+            title: "poster-for-sun-room",
+            name: "Poster for Sun Room",
+            src: "./images/poster-for-sun-room/1.jpg"
+        },
+        {
+            id: 23,
+            title: "poster-for-sun-room-1",
+            name: "Dior x Cactus Jack, Designs for Dior x Cactus Jack in, collaboration with Dior and Cactus Jack",
+            src: "./images/dior-x-cactus-jack-1/1.png"
+        },
+        {
+            id: 24,
+            title: "poster-for-ali-macofsky",
+            name: "Poster for Ali Macofsky",
+            src: "./images/poster-for-ali-macofsky/1.jpg"
+        },
+        {
+            id: 25,
+            title: "new-gallery-14",
+            name: "Apple Music Playlist Cover",
+            src: "./images/new-gallery-14/1.jpg"
+        },
+        {
+            id: 26,
+            title: "weston-estate-tour-poster",
+            name: "Weston Estate Tour Poster",
+            src: "./images/weston-estate-tour-poster/1.jpg"
+        },
+        {
+            id: 27,
+            title: "poster-for-the-1975",
+            name: "Poster for the 1975",
+            src: "./images/poster-for-the-1975/1.jpg"
+        },
+        {
+            id: 28,
+            title: "sweatshirt-for-bad-bunny",
+            name: "Sweatshirt for Bad Bunny",
+            src: "./images/sweatshirt-for-bad-bunny/1.jpg"
+        },
+        {
+            id: 29,
+            title: "fiji-blue-flyer",
+            name: "Fiji Blue Flyer",
+            src: "./images/fiji-blue-flyer/1.jpg"
+        },
+        {
+            id: 30,
+            title: "gracie-abrams-tour-poster-1",
+            name: "Gracie Abrams Tour Poster",
+            src: "./images/gracie-abrams-tour-poster-1/1.jpg"
+        },
+        {
+            id: 31,
+            title: "grace-vanderwaal-repeat-single-artwork-with-clare-gillen",
+            name: "Dior x Cactus Jack, Designs for Cactus Jack Dior Summer 2022, In Collaboration with Cactus Jack and Dior ",
+            src: "./images/grace-vanderwaal-repeat-single-artwork-with-clare-gillen/1.jpeg"
+        },
+        {
+            id: 32,
+            title: "dior-x-cactus-jack",
+            name: "Grace Vanderwaal 'Repeat' Single Artwork with Clare Gillen",
+            src: "./images/dior-x-cactus-jack/1.jpg"
+        },
+        {
+            id: 33,
+            title: "sun-room-poster",
+            name: "Sun Room Poster",
+            src: "./images/sun-room-poster/1.jpg"
+        },
+        {
+            id: 34,
+            title: "gracie-abrams-la-shows-screen-prints",
+            name: "Gracie Abrams LA Shows Screen Prints",
+            src: "./images/gracie-abrams-la-shows-screen-prints/1.jpg"
+        },
+        {
+            id: 35,
+            title: "new-gallery-15",
+            name: "GoodBoy Wine Flyer",
+            src: "./images/new-gallery-15/1.jpg"
+        },
+        {
+            id: 36,
+            title: "this-aint-no-picnic-festival-flyers-1",
+            name: "This Ain't No Picnic Festival flyers",
+            src: "./images/this-aint-no-picnic-festival-flyers-1/1.jpg"
+        },
+        {
+            id: 37,
+            title: "j-ember-flyer",
+            name: "J Ember Flyer",
+            src: "./images/j-ember-flyer/1.jpg"
+        },
+        {
+            id: 38,
+            title: "laura-elliot-poster",
+            name: "Laura Elliot Poster",
+            src: "./images/laura-elliot-poster/1.jpg"
+        },
+        {
+            id: 39,
+            title: "thomie-martinez-footsteps-in-the-dark-single-artwork",
+            name: "Thomie Martinez 'Footsteps In The Dark' Single Artwork",
+            src: "./images/thomie-martinez-footsteps-in-the-dark-single-artwork/1.jpg"
+        },
+        {
+            id: 40,
+            title: "nao-another-lifetime-single-artwork",
+            name: "Nao 'Another Lifetime' Single Artwork, Art Direction and Design: Wyatt Knowles and Bryan Rivera",
+            src: "./images/nao-another-lifetime-single-artwork/1.jpg"
+        },
+        {
+            id: 41,
+            title: "this-aint-no-picnic-flyers",
+            name: "This Ain't No Picnic Flyers",
+            src: "./images/this-aint-no-picnic-flyers/1.jpg"
+        },
+        {
+            id: 42,
+            title: "clairo-photo-treatment-and-merchandise",
+            name: "clairo photo treatment and merchandise",
+            src: "./images/clairo-photo-treatment-and-merchandise/1.jpg"
+        },
+        {
+            id: 43,
+            title: "alexander-23-tour-poster",
+            name: "Alexander 23 Tour Poster",
+            src: "./images/alexander-23-tour-poster/1.jpg"
+        },
+        {
+            id: 44,
+            title: "coup-de-mainfebruary-zine-cover",
+            name: "Coup De Main-February Zine Cover",
+            src: "./images/coup-de-mainfebruary-zine-cover/1.jpeg"
+        },
+        {
+            id: 45,
+            title: "tee-for-mattel-x-urban-outfitters-with-chris-horan",
+            name: "Tee for Mattel x Urban Outfitters with Chris Horan",
+            src: "./images/tee-for-mattel-x-urban-outfitters-with-chris-horan/1.png"
+        },
+        {
+            id: 46,
+            title: "modcon-flyer",
+            name: "ModCon Flyer",
+            src: "./images/modcon-flyer/1.jpg"
+        },
+        {
+            id: 47,
+            title: "flyer-for-palms",
+            name: "Flyer for Palms",
+            src: "./images/flyer-for-palms/1.jpg"
+        },
+        {
+            id: 48,
+            title: "tshirt-for-the-driver-era",
+            name: "T-shirt for The Driver Era",
+            src: "./images/tshirt-for-the-driver-era/1.png"
+        },
+        {
+            id: 49,
+            title: "gracie-abrams-tour-flyer",
+            name: "Gracie Abrams Tour Flyer",
+            src: "./images/gracie-abrams-tour-flyer/1.jpeg"
+        },
+        {
+            id: 50,
+            title: "flyer-for-jeremy-zucker-chelsea-cutler",
+            name: "Flyer for Jeremy Zucker & Chelsea Cutler",
+            src: "./images/flyer-for-jeremy-zucker-chelsea-cutler/1.jpg"
+        },
+        {
+            id: 51,
+            title: "gracie-abrams-tour-poster",
+            name: "Gracie Abrams Tour Poster",
+            src: "./images/gracie-abrams-tour-poster/1.jpg"
+        },
+        {
+            id: 52,
+            title: "j-ember-tour-poster",
+            name: "J Ember Tour Poster",
+            src: "./images/j-ember-tour-poster/1.jpg"
+        },
+        {
+            id: 53,
+            title: "new-gallery-5",
+            name: "Gracie Abrams 'Minor' Album Direction & Design",
+            src: "./images/new-gallery-5/1.jpg"
+        },
+        {
+            id: 54,
+            title: "dylan-conrique-bitter-design-art-direction",
+            name: "Dylan Conrique 'Bitter' Design & Art Direction",
+            src: "./images/dylan-conrique-bitter-design-art-direction/1.jpg"
+        },
+        {
+            id: 55,
+            title: "new-gallery-33",
+            name: "Artwork for Walk The Moon single 'Can you handle my love??'",
+            src: "./images/new-gallery-33/1.jpg"
+        },
+        {
+            id: 56,
+            title: "i-miss-you-im-sorry-single-artwork-design-direction-for-gracie-abrams",
+            name: "'I Miss You Im Sorry' Single Artwork Design + Direction for Gracie Abrams",
+            src: "./images/i-miss-you-im-sorry-single-artwork-design-direction-for-gracie-abrams/1.jpg"
+        },
+        {
+            id: 57,
+            title: "grace-vanderwaal-dont-assume-what-you-dont-know",
+            name: "Grace Vanderwaal Don't Assume What You Don't Know Design",
+            src: "./images/grace-vanderwaal-dont-assume-what-you-dont-know/1.jpg"
+        },
+        {
+            id: 58,
+            title: "foo-fighters-flyer-for-agoura-hills-show",
+            name: "Foo Fighters Flyer for Agoura Hills show",
+            src: "./images/foo-fighters-flyer-for-agoura-hills-show/1.png"
+        },
+        {
+            id: 59,
+            title: "foo-fighters-flyer",
+            name: "Foo Fighters Flyer for NY show",
+            src: "./images/foo-fighters-flyer/1.jpg"
+        },
+        {
+            id: 60,
+            title: "thin-skin-human-single-artwork",
+            name: "Thin Skin 'Human' Single Artwork",
+            src: "./images/thin-skin-human-single-artwork/1.jpg"
+        },
+        {
+            id: 61,
+            title: "gracie-abrams-minor-artwork",
+            name: "Gracie Abrams 'Minor' Artwork - Creative Direction & Design",
+            src: "./images/gracie-abrams-minor-artwork/1.jpg"
+        },
+        {
+            id: 62,
+            title: "new-gallery-72",
+            name: "Gracie Abrams Bedroom Shows Tour Poster",
+            src: "./images/new-gallery-72/1.jpg"
+        },
+        {
+            id: 63,
+            title: "the-stroppies-tour-poster",
+            name: "The Stroppies Tour Poster",
+            src: "./images/the-stroppies-tour-poster/1.jpg"
+        },
+        {
+            id: 64,
+            title: "sloan-peterson-poster",
+            name: "Sloan Peterson Poster",
+            src: "./images/sloan-peterson-poster/1.jpg"
+        },
+        {
+            id: 65,
+            title: "modcon-ammo-single-artwork",
+            name: "ModCon 'Ammo' Single Artwork",
+            src: "./images/modcon-ammo-single-artwork/1.jpg"
+        },
+        {
+            id: 66,
+            title: "new-gallery-40",
+            name: "Design & Direction for Lauren Aquilina's single Swap Places",
+            src: "./images/new-gallery-40/1.jpg"
+        },
+        {
+            id: 67,
+            title: "cassette-design-for-mouche-live-from-the-bubble",
+            name: "Cassette Design For Mouche 'Live From The Bubble'",
+            src: "./images/cassette-design-for-mouche-live-from-the-bubble/1.jpg"
+        },
+        {
+            id: 68,
+            title: "tour-poster-for-mild-orange",
+            name: "tour poster for MIld Orange",
+            src: "./images/tour-poster-for-mild-orange/1.jpg"
+        },
+        {
+            id: 69,
+            title: "sasha-sloan-smiling-when-i-die",
+            name: "Sasha Sloan 'Smiling When I Die'",
+            src: "./images/sasha-sloan-smiling-when-i-die/1.jpg"
+        },
+        {
+            id: 70,
+            title: "valeras-flyer",
+            name: "Valeras Flyer",
+            src: "./images/valeras-flyer/1.jpg"
+        },
+        {
+            id: 71,
+            title: "new-gallery-18",
+            name: "J Ember Flyer",
+            src: "./images/new-gallery-18/1.jpg"
+        },
+        {
+            id: 72,
+            title: "sasha-sloan-self-portrait-record-cover",
+            name: "Sasha Sloan Self Portrait Record Cover",
+            src: "./images/sasha-sloan-self-portrait-record-cover/1.jpg"
+        },
+        {
+            id: 73,
+            title: "skizzy-mars-vip-print",
+            name: "Skizzy Mars VIP Print, Screen prints for VIP guests at the Free Skizzy Mars tour",
+            src: "./images/skizzy-mars-vip-print/1.jpg"
+        },
+        {
+            id: 74,
+            title: "poster-for-mash-movie",
+            name: "Poster for 'Mash' movie",
+            src: "./images/poster-for-mash-movie/1.jpg"
+        },
+        {
+            id: 75,
+            title: "lauren-aquilina-ghost-world-piano-versions-artwork",
+            name: "Lauren Aquilina 'Ghost World (Piano Versions) Artwork",
+            src: "./images/lauren-aquilina-ghost-world-piano-versions-artwork/1.jpg"
+        },
+        {
+            id: 76,
+            title: "artwork-for-chastity-beltloose-tooth-split-single",
+            name: "Artwork for Chastity Belt/Loose Tooth Split Single",
+            src: "./images/artwork-for-chastity-beltloose-tooth-split-single/1.jpg"
+        },
+        {
+            id: 77,
+            title: "sasha-sloan-at-least-i-look-cool-single-artwork",
+            name: "Sasha Sloan At Least I Look Cool single artwork",
+            src: "./images/sasha-sloan-at-least-i-look-cool-single-artwork/1.jpg"
+        },
+        {
+            id: 78,
+            title: "crepes-flyer",
+            name: "Crepes Flyer",
+            src: "./images/crepes-flyer/1.jpg"
+        },
+        {
+            id: 79,
+            title: "new-gallery-64",
+            name: "Mod Con flyer",
+            src: "./images/new-gallery-64/1.jpg"
+        },
+        {
+            id: 80,
+            title: "new-gallery-21",
+            name: "truly holy flyer",
+            src: "./images/new-gallery-21/1.jpg"
+        },
+        {
+            id: 81,
+            title: "new-gallery-75",
+            name: "Truly Holy Flyer",
+            src: "./images/new-gallery-75/1.jpg"
+        },
+        {
+            id: 82,
+            title: "natty-wylah-flyer",
+            name: "Natty Wylah Flyer",
+            src: "./images/natty-wylah-flyer/1.jpg"
+        },
+        {
+            id: 83,
+            title: "new-gallery-17",
+            name: "collab with alex crampton",
+            src: "./images/new-gallery-17/1.png"
+        },
+        {
+            id: 84,
+            title: "new-gallery-73",
+            name: "Clairo collage for tour merch",
+            src: "./images/new-gallery-73/1.jpg"
+        },
+        {
+            id: 85,
+            title: "hfhfhrh",
+            name: "holiday lookbook, collages of byron spencers photos for holiday lookbook",
+            src: "./images/hfhfhrh/1.jpg"
+        },
+        {
+            id: 86,
+            title: "ghthfhfh",
+            name: "truly holy flyer",
+            src: "./images/ghthfhfh/1.png"
+        },
+        {
+            id: 87,
+            title: "new-gallery-26",
+            name: "Lemon Twigs poster",
+            src: "./images/new-gallery-26/1.jpg"
+        },
+        {
+            id: 88,
+            title: "new-gallery-57",
+            name: "Bad Family poster",
+            src: "./images/new-gallery-57/1.jpg"
+        },
+        {
+            id: 89,
+            title: "holiday-lookbook",
+            name: "HOLIDAY LOOKBOOK, collages of byron spencers photos for HOLIDAY",
+            src: "./images/holiday-lookbook/1.jpg"
+        },
+        {
+            id: 90,
+            title: "new-gallery-43",
+            name: "Truly Holy poster",
+            src: "./images/new-gallery-43/1.jpg"
+        },
+        {
+            id: 91,
+            title: "fhdfhfhfhf",
+            name: "HOLIDAY, collage of byron spencers photos for HOLIDAY lookbook",
+            src: "./images/fhdfhfhfhf/1.jpg"
+        },
+        {
+            id: 92,
+            title: "hhjtyhtyhthh",
+            name: "Holiday collages of byron spencers photos for HOLIDAY lookbook",
+            src: "./images/hhjtyhtyhthh/1.jpg"
+        },
+        {
+            id: 93,
+            title: "new-gallery-31",
+            name: "Gabriella Cohen poster",
+            src: "./images/new-gallery-31/1.jpg"
+        },
+        {
+            id: 94,
+            title: "new-gallery-80",
+            name: "Truly Holy poster",
+            src: "./images/new-gallery-80/1.jpg"
+        },
+        {
+            id: 95,
+            title: "t-shirt-for-holiday",
+            name: "T SHIRT FOR HOLIDAY",
+            src: "./images/t-shirt-for-holiday/1.png"
+        },
+        {
+            id: 96,
+            title: "new-gallery-87",
+            name: "NAO 'SATURN' ALBUM ART DIRECTION & DESIGN with Bryan Rivera",
+            src: "./images/new-gallery-87/1.png"
+        },
+        {
+            id: 97,
+            title: "new-gallery-51",
+            name: "Nao 'Make it Out Alive' single art with Bryan Rivera",
+            src: "./images/new-gallery-51/1.png"
+        },
+        {
+            id: 98,
+            title: "j-emeber-bargain-flights-single-artwork",
+            name: "J Emeber 'Bargain Flights' Single Artwork",
+            src: "./images/j-emeber-bargain-flights-single-artwork/1.jpg"
+        },
+    ];
+
+    const imageSection = document.getElementById("image-section");
+    images.forEach((image) => {
+      const imageElement = document.createElement("div");
+      imageElement.innerHTML = `
+        <a onclick="setMainImage('${image.id}', '${image.title}')" href="#${image.title}">
+          <img src="${image.src}" alt="${image.name}" class="img-fluid rounded">
+        </a>
+      `;
+      imageSection.appendChild(imageElement);
+    });
+
+    function setMainImage(id, title) {
+        event.preventDefault();
+        const mainImage = document.getElementById("main-image");
+        const image = images.find((image) => image.title === title);
+        mainImage.innerHTML = `
+            <img src="${image.src}" alt="${image.name}" class="img-fluid rounded">
+        `;
+        document.getElementById("main-image-name").innerHTML = `<h2>${image.name}</h2>`;
+
+        window.scrollTo(0, 0);
+        window.history.pushState({}, "", `?title=${image.title}`);
+        
+        const prevProject = document.getElementById("prev-project");
+        const nextProject = document.getElementById("next-project");
+        
+        const imageIndex = images.findIndex((image) => image.title === title);
+        if (imageIndex === 0) {
+        prevProject.classList.add("disabled");
+        } else {
+            prevProject.classList.remove("disabled");
+            prevProject.setAttribute("onclick", `setMainImage('${images[imageIndex - 1].id}', '${images[imageIndex - 1].title}')`);
+        }
+        if (imageIndex === images.length - 1) {
+        nextProject.classList.add("disabled");
+        } else {
+            nextProject.classList.remove("disabled");
+            nextProject.setAttribute("onclick", `setMainImage('${images[imageIndex + 1].id}', '${images[imageIndex + 1].title}')`);
+        }
+    
+        // show the project controls
+        document.getElementById("project-controls").classList.remove("d-none");
+    }
+    
+    hideMainImage = () => {
+        const mainImage = document.getElementById("main-image");
+        mainImage.innerHTML = "";
+        document.getElementById("main-image-name").innerHTML = "";
+        window.history.replaceState({}, "", window.location.pathname); // Clears the query string
+        document.getElementById("project-controls").classList.add("d-none");
+    }
+
+
+    window.onload = function() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const imageTitle = urlParams.get("title");
+      if (imageTitle) {
+        const image = images.find((image) => image.title === imageTitle);
+        // check if the image is the first or last image in the array to disable the prev/next buttons
+        const prevProject = document.getElementById("prev-project");
+        const nextProject = document.getElementById("next-project");
+        const imageIndex = images.findIndex((image) => image.title === imageTitle);
+        if (imageIndex === 0) {
+          prevProject.classList.add("disabled");
+        } else {
+            // set onclick event for the prev button
+            prevProject.classList.remove("disabled");
+            prevProject.setAttribute("onclick", `setMainImage('${images[imageIndex - 1].id}', '${images[imageIndex - 1].title}')`);
+        }
+        if (imageIndex === images.length - 1) {
+          nextProject.classList.add("disabled");
+        } else {
+            // set onclick event for the next button
+            nextProject.classList.remove("disabled");
+            nextProject.setAttribute("onclick", `setMainImage('${images[imageIndex + 1].id}', '${images[imageIndex + 1].title}')`);
+        }
+        document.getElementById("project-controls").classList.remove("d-none");
+        setMainImage(image.id, image.title);
+      }
+    };
+  </script>
+</body>
+</html>

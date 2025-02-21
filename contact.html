@@ -12,27 +12,45 @@
       margin: 0;
       padding: 0;
       display: flex;
+      background-color: #ffffff;
     }
 
-    /* Sidebar Navbar */
+    /* Sidebar */
     .sidebar {
       width: 235px;
       height: 100vh;
       background-color: #f8f9fa;
+      color: #333;
       padding: 20px;
       position: fixed;
       top: 0;
       left: 0;
+      transition: width 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
     }
 
-    .sidebar .nav-link {
+    .sidebar.collapsed {
+      width: 70px;
+      padding: 20px 10px;
+    }
+
+    /* Sidebar Links */
+    .nav-link {
       font-size: 20px;
-      margin-bottom: 10px;
+      margin: 10px 0;
       color: #000;
+      text-decoration: none;
+      display: block;
     }
 
-    .sidebar .nav-link.active {
+    .nav-link.active {
       color: blue;
+    }
+
+    .sidebar.collapsed .nav-link span {
+      display: none;
     }
 
     /* Main Content */
@@ -40,27 +58,57 @@
       margin-left: 256px;
       padding: 20px;
       width: calc(100% - 270px);
+      transition: margin-left 0.3s ease;
+    }
+
+    .content.expanded {
+      margin-left: 90px;
+      width: calc(100% - 110px);
+    }
+
+    /* Toggle Button */
+    .toggle-btn {
+      background-color: #f1f1f1;
+      border: 1px solid #ddd;
+      color: #333;
+      font-size: 18px;
+      padding: 10px;
+      border-radius: 5px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+      width: 100%;
+      margin-bottom: 20px;
+    }
+
+    .toggle-btn:hover {
+      background-color: #e9ecef;
     }
   </style>
 </head>
 <body>
-  <!-- Sidebar Navbar -->
-  <nav class="sidebar">
+  <!-- Sidebar -->
+  <nav class="sidebar" id="sidebar">
+    <button class="toggle-btn" id="toggleSidebar">
+      <i class="fas fa-bars"></i>
+    </button>
     <ul class="nav flex-column">
       <li class="nav-item">
-        <a class="nav-link" href="./home.html">Graphic Design</a>
+        <a class="nav-link" href="./home.html"><span>Graphic Design</span></a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="./creative-direction.html">Creative Direction</a>
+        <a class="nav-link" href="./creative-direction.html"><span>Creative Direction</span></a>
       </li>
       <li class="nav-item">
-        <a class="nav-link active" href="./contact.html">Contact</a>
+        <a class="nav-link active" href="./contact.html"><span>Contact</span></a>
       </li>
     </ul>
   </nav>
 
-  <!-- Content Section -->
-  <div class="content">
+  <!-- Content -->
+  <div class="content" id="content">
     <h1>Contact Me</h1>
     <p>Feel free to reach out to me via email or phone. I'm always open to new projects and collaborations.</p>
     <p>
@@ -72,5 +120,17 @@
       Phone: 123-456-7890
     </p>
   </div>
+
+  <script>
+    // JavaScript to toggle sidebar
+    const toggleButton = document.getElementById("toggleSidebar");
+    const sidebar = document.getElementById("sidebar");
+    const content = document.getElementById("content");
+
+    toggleButton.addEventListener("click", () => {
+      sidebar.classList.toggle("collapsed");
+      content.classList.toggle("expanded");
+    });
+  </script>
 </body>
 </html>

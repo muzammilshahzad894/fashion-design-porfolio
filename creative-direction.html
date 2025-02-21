@@ -136,6 +136,38 @@
     .project-controls a {
         text-decoration: none;
     }
+    
+    /* Fade-out and fade-in animations */
+    .fade-out {
+        opacity: 0;
+        transition: opacity 0.5s ease-in;
+    }
+
+    .fade-in {
+        opacity: 1;
+        transition: opacity 0.5s ease-out;
+    }
+
+    /* Basic confetti styles */
+    .confetti {
+        position: absolute;
+        border-radius: 50%;
+        pointer-events: none; /* Prevent interaction with the confetti */
+        animation: fall 1s ease-out forwards;
+    }
+
+    /* Confetti falling animation */
+    @keyframes fall {
+        0% {
+            opacity: 1;
+            transform: translateY(0px) rotate(0deg);
+        }
+        100% {
+            opacity: 0;
+            transform: translateY(50px) rotate(360deg);
+        }
+    }
+
   </style>
 </head>
 <body>
@@ -275,10 +307,27 @@
         event.preventDefault();
         const mainImage = document.getElementById("main-image");
         const image = subimages.find((image) => image.title === title);
-        mainImage.innerHTML = `
-            <img src="${image.src}" alt="${image.name}" class="img-fluid rounded">
-        `;
+        
+        // Add fade-out animation
+        mainImage.classList.add("fade-out");
+
+        // Wait for the fade-out animation to complete before showing the new image
+        setTimeout(() => {
+            mainImage.innerHTML = `
+                <img src="${image.src}" alt="${image.name}" class="img-fluid rounded">
+            `;
+            
+            // Remove the fade-out class and add a fade-in class
+            mainImage.classList.remove("fade-out");
+            mainImage.classList.add("fade-in");
+
+            // Remove the fade-in class after the animation completes
+            setTimeout(() => {
+                mainImage.classList.remove("fade-in");
+            }, 500); // Match this to the CSS animation duration
+        }, 500); // Match this to the CSS animation duration
     }
+
     
     hideMainImage = () => {
         const mainImage = document.getElementById("main-image");
@@ -331,6 +380,30 @@
       sidebar.classList.toggle("collapsed");
       content.classList.toggle("expanded");
     });
+    
+    document.addEventListener("mousemove", (event) => {
+      const confetti = document.createElement("div");
+      confetti.classList.add("confetti");
+
+      // Set the position of the confetti to follow the cursor
+      confetti.style.left = `${event.pageX}px`;
+      confetti.style.top = `${event.pageY}px`;
+
+      // Randomize color and size
+      const size = Math.random() * 5 + 3; // Size between 5px and 15px
+      confetti.style.width = `${size}px`;
+      confetti.style.height = `${size}px`;
+      confetti.style.backgroundColor = `hsl(${Math.random() * 360}, 100%, 70%)`;
+
+      // Append confetti to the document body
+      document.body.appendChild(confetti);
+
+      // Remove the confetti after 1 second
+      setTimeout(() => {
+          confetti.remove();
+      }, 1000);
+    });
+
   </script>
 </body>
 </html>
